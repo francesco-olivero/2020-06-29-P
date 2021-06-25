@@ -5,9 +5,12 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,30 +42,60 @@ public class FXMLController {
     private TextField txtMinuti; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbMese"
-    private ComboBox<?> cmbMese; // Value injected by FXMLLoader
+    private ComboBox<Month> cmbMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM1"
-    private ComboBox<?> cmbM1; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbM2"
-    private ComboBox<?> cmbM2; // Value injected by FXMLLoader
+    private ComboBox<Match> cmbM2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
 
     @FXML
     void doConnessioneMassima(ActionEvent event) {
+    	Month month = this.cmbMese.getValue();
+    	try {
+    		int minuti = Integer.parseInt(this.txtMinuti.getText());
+    		this.txtResult.appendText(this.model.getMax(month, minuti));
+    	}catch (NumberFormatException nfe) {
+    		txtResult.appendText("ERRORE: Il campo soglia deve essere numerico\n");
+    		return ;
+    	}
     	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	
+    	this.txtResult.clear();
+    	Month month = this.cmbMese.getValue();
+    	try {
+    		int minuti = Integer.parseInt(this.txtMinuti.getText());
+    		this.txtResult.appendText(this.model.creaGrafo(month, minuti));
+    		
+    		this.cmbM1.getItems().addAll(this.model.getIdMapMatches().values());
+    		this.cmbM2.getItems().addAll(this.model.getIdMapMatches().values());
+        	
+    	}catch (NumberFormatException nfe) {
+    		txtResult.appendText("ERRORE: Il campo soglia deve essere numerico\n");
+    		return ;
+    	}
     }
 
     @FXML
     void doCollegamento(ActionEvent event) {
+    	Match m1 = this.cmbM1.getValue();
+    	Match m2 = this.cmbM2.getValue();
     	
+    	List<Match> list = this.model.percorsoMigliore(m1, m2);
+    	if (!list.isEmpty() && list!=null) {
+    		this.txtResult.appendText("\n\nPercorso migliore:\n");
+    		for (Match m: list) {
+    			this.txtResult.appendText(m+"\n");
+    		}
+    		this.txtResult.appendText("Peso del percorso: "+this.model.getPesoBest());
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -79,6 +112,9 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	for (int i=1; i<=12; i++) {
+    		this.cmbMese.getItems().add(Month.of(i));
+    	}
   
     }
     

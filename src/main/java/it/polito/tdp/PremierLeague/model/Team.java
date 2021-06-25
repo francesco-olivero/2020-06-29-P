@@ -47,5 +47,12 @@ public class Team {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Team [teamID=" + teamID + ", name=" + name + "]";
+	}
+	
+	
 	
 }
