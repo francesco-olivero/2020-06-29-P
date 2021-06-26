@@ -99,7 +99,7 @@ public class Model {
 				this.percorsoBest = new ArrayList<>(parziale) ;
 				this.pesoBest=pesoParziale;
 				return ;
-			} else if( pesoParziale < this.pesoBest ) {
+			} else if( pesoParziale > this.pesoBest ) {
 				this.pesoBest=pesoParziale;
 				this.percorsoBest = new ArrayList<>(parziale) ;
 				return ;
