@@ -81,15 +81,14 @@ public class Model {
 		this.pesoBest = 0;
 		
 		List<Match> parziale = new ArrayList<Match>() ;
-		double pesoParziale = 0;
 		parziale.add(partenza) ;
 		
-		cerca(parziale, 1, arrivo, pesoParziale) ;
+		cerca(parziale, 1, arrivo) ;
 		
 		return this.percorsoBest ;
 	}
 	
-	private void cerca(List<Match> parziale, int livello, Match arrivo, double pesoParziale) {
+	private void cerca(List<Match> parziale, int livello, Match arrivo) {
 		
 		Match ultimo = parziale.get(parziale.size()-1) ;
 		
@@ -97,10 +96,10 @@ public class Model {
 		if(ultimo.equals(arrivo)) {
 			if(this.percorsoBest==null) {
 				this.percorsoBest = new ArrayList<>(parziale) ;
-				this.pesoBest=pesoParziale;
+				this.pesoBest=getPesoParziale(parziale);
 				return ;
-			} else if( pesoParziale > this.pesoBest ) {
-				this.pesoBest=pesoParziale;
+			} else if( getPesoParziale(parziale) < this.pesoBest ) {
+				this.pesoBest=getPesoParziale(parziale);
 				this.percorsoBest = new ArrayList<>(parziale) ;
 				return ;
 			} else {
@@ -118,16 +117,22 @@ public class Model {
 					
 					
 					if(!parziale.contains(prossimo)) { // evita i cicli
-						pesoParziale+=this.grafo.getEdgeWeight(e);
 						parziale.add(prossimo);
-						cerca(parziale, livello + 1, arrivo, pesoParziale);
+						cerca(parziale, livello + 1, arrivo);
 						parziale.remove(parziale.size()-1) ;
 					}
 				}
 			}	
 		}
 
-
+	public double getPesoParziale(List<Match> parziale) {
+		double peso = 0;
+		for (int i=0; i<parziale.size()-1; i++) { 
+			DefaultWeightedEdge dwe = this.grafo.getEdge(parziale.get(i), parziale.get(i+1));
+			peso+=this.grafo.getEdgeWeight(dwe);
+		}
+		return peso;
+	}
 
 
 	private boolean stesseSquadre(Match ultimo, Match prossimo) {
